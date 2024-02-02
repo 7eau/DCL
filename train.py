@@ -2,19 +2,14 @@
 import os
 import datetime
 import argparse
-import logging
-import pandas as pd
 
 import torch
 import torch.nn as nn
-from  torch.nn import CrossEntropyLoss
 import torch.utils.data as torchdata
-from torchvision import datasets, models
 import torch.optim as optim
 from torch.optim import lr_scheduler
 import torch.backends.cudnn as cudnn
 
-from transforms import transforms
 from utils.train_model import train
 from models.LoadModel import MainModel
 from config import LoadConfig, load_data_transformers

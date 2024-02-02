@@ -59,7 +59,6 @@ def train(Config,
     get_angle_loss = AngleLoss()
 
     for epoch in range(start_epoch,epoch_num-1):
-        exp_lr_scheduler.step(epoch)
         model.train(True)
 
         save_grad = []
@@ -117,6 +116,8 @@ def train(Config,
             optimizer.step()
             torch.cuda.synchronize()
 
+            exp_lr_scheduler.step()
+
             if Config.use_dcl:
                 print('step: {:-8d} / {:d} loss=ce_loss+swap_loss+law_loss: {:6.4f} = {:6.4f} + {:6.4f} + {:6.4f} '.format(step, train_epoch_step, loss.detach().item(), ce_loss.detach().item(), swap_loss.detach().item(), law_loss.detach().item()), flush=True)
             if Config.use_backbone:
@@ -130,7 +131,7 @@ def train(Config,
                 rec_loss = []
                 print(32*'-', flush=True)
                 print('step: {:d} / {:d} global_step: {:8.2f} train_epoch: {:04d} rec_train_loss: {:6.4f}'.format(step, train_epoch_step, 1.0*step/train_epoch_step, epoch, train_loss_recorder.get_val()), flush=True)
-                print('current lr:%s' % exp_lr_scheduler.get_lr(), flush=True)
+                print('current lr:%s' % exp_lr_scheduler.get_last_lr(), flush=True)
                 if eval_train_flag:
                     trainval_acc1, trainval_acc2, trainval_acc3 = eval_turn(Config, model, data_loader['trainval'], 'trainval', epoch, log_file)
                     if abs(trainval_acc1 - trainval_acc3) < 0.01:

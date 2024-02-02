@@ -4,10 +4,18 @@ import torch
 from torchvision import models, transforms, datasets
 import torch.nn.functional as F
 import pretrainedmodels
+import os
 
-from config import pretrained_model
+from config import pretrained_model, model_urls
+try:
+    from torch.hub import load_state_dict_from_url
+except ImportError:
+    from torch.utils.model_zoo import load_url as load_state_dict_from_url
 
 import pdb
+
+from models.Asoftmax_linear import AngleLinear
+
 
 class MainModel(nn.Module):
     def __init__(self, config):
@@ -21,7 +29,14 @@ class MainModel(nn.Module):
         if self.backbone_arch in dir(models):
             self.model = getattr(models, self.backbone_arch)()
             if self.backbone_arch in pretrained_model:
-                self.model.load_state_dict(torch.load(pretrained_model[self.backbone_arch]))
+                pretrained_model_path = pretrained_model[self.backbone_arch]
+                if os.path.isfile(pretrained_model_path):
+                    self.model.load_state_dict(torch.load(pretrained_model[self.backbone_arch]))
+                else:
+                    print("=> no pretrained model found at '{}' Load from internet.".format(pretrained_model_path))
+                    state_dict = load_state_dict_from_url(model_urls[self.backbone_arch], progress=True)
+                    self.model.load_state_dict(state_dict)
+
         else:
             if self.backbone_arch in pretrained_model:
                 self.model = pretrainedmodels.__dict__[self.backbone_arch](num_classes=1000, pretrained=None)
