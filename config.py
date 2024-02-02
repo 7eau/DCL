@@ -70,7 +70,7 @@ class LoadConfig(object):
         elif args.dataset == 'CUB':
             self.dataset = args.dataset
             self.rawdata_root = './dataset/CUB_200_2011/data'
-            self.anno_root = './dataset/CUB_200_2011/anno'
+            self.anno_root = './dataset/CUB_200_2011/test_anno'
             self.numcls = 200
         elif args.dataset == 'STCAR':
             self.dataset = args.dataset
